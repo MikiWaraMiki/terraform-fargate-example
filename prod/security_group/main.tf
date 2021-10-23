@@ -11,9 +11,10 @@ data "terraform_remote_state" "network" {
 module "management_sg" {
   source = "terraform-aws-modules/security-group/aws"
 
-  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
-  name        = "${var.pj_prefix}-${var.environment}-management-sg"
-  description = "Security Group of management"
+  vpc_id       = data.terraform_remote_state.network.outputs.vpc_id
+  name         = "${var.pj_prefix}-${var.environment}-management-sg"
+  description  = "Security Group of management"
+  egress_rules = ["all-all"]
 
   tags = {
     Environment = var.environment
@@ -37,6 +38,8 @@ module "public_elb_sg" {
       cidr_blocks = "0.0.0.0/0"
     }
   ]
+  egress_rules = ["all-all"]
+
 
   tags = {
     Environment = var.environment
@@ -58,6 +61,8 @@ module "frontend_app_sg" {
     }
   ]
   number_of_computed_ingress_with_source_security_group_id = 1
+  egress_rules                                             = ["all-all"]
+
 
   tags = {
     Environment = var.environment
@@ -85,6 +90,8 @@ module "internal_elb_sg" {
     }
   ]
   number_of_computed_ingress_with_source_security_group_id = 2
+  egress_rules                                             = ["all-all"]
+
 
   tags = {
     Environment = var.environment
@@ -107,6 +114,8 @@ module "backend_app_sg" {
     }
   ]
   number_of_computed_ingress_with_source_security_group_id = 1
+  egress_rules                                             = ["all-all"]
+
 
   tags = {
     Environment = var.environment
@@ -134,7 +143,7 @@ module "rds_sg" {
     }
   ]
   number_of_computed_ingress_with_source_security_group_id = 2
-
+  egress_rules                                             = ["all-all"]
 
   tags = {
     Environment = var.environment
