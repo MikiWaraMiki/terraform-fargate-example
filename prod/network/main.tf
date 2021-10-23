@@ -100,6 +100,12 @@ module "gateway_endpoints" {
       private_dns_enabled = true
       subnet_ids          = values(aws_subnet.gateway_subnets)[*].id
       tags                = { Name : "${var.pj_prefix}-${var.environment}-ecr-api" }
+    },
+    cloudwatch = {
+      service             = "logs"
+      private_dns_enabled = true
+      subnet_ids          = values(aws_subnet.gateway_subnets)[*].id
+      tags                = { Name = "${var.pj_prefix}-${var.environment}-logs-api" }
     }
   }
 
