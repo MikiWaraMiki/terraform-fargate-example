@@ -6,7 +6,7 @@ remote_state {
   backend = "s3"
   config = {
     bucket  = "${local.backend_config.bucket}"
-    key     = "fargate_example/prod${path_relative_to_include()}.tfstate"
+    key     = "fargate_example/prod/${path_relative_to_include()}.tfstate"
     region  = local.backend_config.region
     encrypt = local.backend_config.encrypt
   }
