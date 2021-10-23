@@ -53,15 +53,14 @@ module "frontend_app_sg" {
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   name        = "${var.pj_prefix}-${var.environment}-frontend-sg"
   description = "Security Group of front container app"
-  computed_ingress_with_source_security_group_id = [
+  ingress_with_source_security_group_id = [
     {
       rule                     = "http-80-tcp"
       source_security_group_id = module.public_elb_sg.security_group_id
       description              = "Allow HTTP Fromt Public ELB"
     }
   ]
-  number_of_computed_ingress_with_source_security_group_id = 1
-  egress_rules                                             = ["all-all"]
+  egress_rules = ["all-all"]
 
 
   tags = {
@@ -77,7 +76,8 @@ module "internal_elb_sg" {
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   name        = "${var.pj_prefix}-${var.environment}-internal-elb-sg"
   description = "Security Group of internal elb"
-  computed_ingress_with_source_security_group_id = [
+
+  ingress_with_source_security_group_id = [
     {
       rule                     = "http-80-tcp"
       source_security_group_id = module.frontend_app_sg.security_group_id
@@ -87,10 +87,16 @@ module "internal_elb_sg" {
       rule                     = "http-80-tcp"
       source_security_group_id = module.management_sg.security_group_id
       description              = "Allow HTTP from management."
+    },
+    {
+      from_port                = 10081
+      to_port                  = 10081
+      protocol                 = 6
+      description              = "Allow HTTP 10081 from management"
+      source_security_group_id = module.management_sg.security_group_id
     }
   ]
-  number_of_computed_ingress_with_source_security_group_id = 2
-  egress_rules                                             = ["all-all"]
+  egress_rules = ["all-all"]
 
 
   tags = {
@@ -106,15 +112,14 @@ module "backend_app_sg" {
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   name        = "${var.pj_prefix}-${var.environment}-backend-sg"
   description = "Security group of backend container app"
-  computed_ingress_with_source_security_group_id = [
+  ingress_with_source_security_group_id = [
     {
       rule                     = "http-80-tcp"
       source_security_group_id = module.internal_elb_sg.security_group_id
       description              = "Allow HTTP from internal ELB"
     }
   ]
-  number_of_computed_ingress_with_source_security_group_id = 1
-  egress_rules                                             = ["all-all"]
+  egress_rules = ["all-all"]
 
 
   tags = {
@@ -130,7 +135,7 @@ module "rds_sg" {
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   name        = "${var.pj_prefix}-${var.environment}-rds-sg"
   description = "Security group of db"
-  computed_ingress_with_source_security_group_id = [
+  ingress_with_source_security_group_id = [
     {
       rule                     = "mysql-tcp"
       source_security_group_id = module.backend_app_sg.security_group_id
@@ -142,8 +147,7 @@ module "rds_sg" {
       description              = "Allow mysql from management."
     }
   ]
-  number_of_computed_ingress_with_source_security_group_id = 2
-  egress_rules                                             = ["all-all"]
+  egress_rules = ["all-all"]
 
   tags = {
     Environment = var.environment
