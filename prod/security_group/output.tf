@@ -42,3 +42,12 @@ output "backend_app_sg_name" {
   description = "The name of backend app sg"
   value       = module.backend_app_sg.security_group_name
 }
+
+output "gateway_sg_id" {
+  description = "THe id of gateway sg"
+  value       = module.gateway_sg.security_group_id
+}
+output "gateway_sg_name" {
+  description = "The name of gateway sg"
+  value       = module.gateway_sg.security_group_name
+}

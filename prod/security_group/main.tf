@@ -151,3 +151,17 @@ module "rds_sg" {
   }
 
 }
+
+module "gateway_sg" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  vpc_id       = data.terraform_remote_state.network.outputs.vpc_id
+  name         = "${var.pj_prefix}-${var.environment}-gateway-sg"
+  description  = "Security Group of gateway endpoint"
+  egress_rules = ["all-all"]
+
+  tags = {
+    Environment = var.environment
+    PJ_Prefix   = var.pj_prefix
+  }
+}
