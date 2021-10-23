@@ -80,3 +80,8 @@ resource "aws_iam_role_policy_attachment" "attachment" {
   role       = aws_iam_role.ecr_access_role.name
   policy_arn = aws_iam_policy.ecr_access_policy.arn
 }
+
+resource "aws_iam_instance_profile" "cloud9_profile" {
+  name = "cloud9_profile"
+  role = aws_iam_role.ecr_access_role.name
+}
