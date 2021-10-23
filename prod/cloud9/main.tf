@@ -58,3 +58,25 @@ resource "aws_iam_policy" "ecr_access_policy" {
     Environment = var.environment
   }
 }
+
+data "aws_iam_policy_document" "assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+
+resource "aws_iam_role" "ecr_access_role" {
+  name               = "${var.pj_prefix}-${var.environment}-ecr-access"
+  assume_role_policy = data.aws_iam_policy_document.assume.json
+}
+
+resource "aws_iam_role_policy_attachment" "attachment" {
+  role       = aws_iam_role.ecr_access_role.name
+  policy_arn = aws_iam_policy.ecr_access_policy.arn
+}
