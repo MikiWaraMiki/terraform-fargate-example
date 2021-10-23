@@ -53,3 +53,23 @@ output "nat_public_ips" {
   description = "The public ip list of the nat gateway"
   value       = module.vpc.nat_public_ips
 }
+
+
+output "gateway_subnet_ids" {
+  description = "The ids of gateway subnet"
+  value       = values(aws_subnet.gateway_subnets)[*].id
+}
+
+output "gateway_rtb_id" {
+  description = "The id of gateway rtb"
+  value = aws_route_table.gateway_rtb.id
+}
+
+output "gateway_sg_id" {
+  description = "THe id of gateway sg"
+  value       = module.gateway_sg.security_group_id
+}
+output "gateway_sg_name" {
+  description = "The name of gateway sg"
+  value       = module.gateway_sg.security_group_name
+}
