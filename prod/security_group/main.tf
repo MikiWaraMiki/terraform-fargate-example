@@ -3,7 +3,7 @@ data "terraform_remote_state" "network" {
 
   config = {
     bucket = local.backend_config.bucket
-    key    = "fargate_example/prodnetwork.tfstate"
+    key    = "fargate_example/prod/network.tfstate"
     region = local.backend_config.region
   }
 }

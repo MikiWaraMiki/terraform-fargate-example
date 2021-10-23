@@ -4,7 +4,7 @@ output "vpc_arn" {
 }
 output "vpc_id" {
   description = "The id of the vpc"
-  value       = module.vpc.vpc_arn
+  value       = module.vpc.vpc_id
 }
 
 output "public_subnet_ids" {
