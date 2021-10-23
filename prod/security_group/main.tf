@@ -54,8 +54,10 @@ module "frontend_app_sg" {
     {
       rule                     = "http-80-tcp"
       source_security_group_id = module.public_elb_sg.security_group_id
+      description              = "Allow HTTP Fromt Public ELB"
     }
   ]
+  number_of_computed_ingress_with_source_security_group_id = 1
 
   tags = {
     Environment = var.environment
@@ -74,8 +76,15 @@ module "internal_elb_sg" {
     {
       rule                     = "http-80-tcp"
       source_security_group_id = module.frontend_app_sg.security_group_id
+      description              = "Allow HTTP from Frontend App"
+    },
+    {
+      rule                     = "http-80-tcp"
+      source_security_group_id = module.management_sg.security_group_id
+      description              = "Allow HTTP from management."
     }
   ]
+  number_of_computed_ingress_with_source_security_group_id = 2
 
   tags = {
     Environment = var.environment
@@ -94,8 +103,10 @@ module "backend_app_sg" {
     {
       rule                     = "http-80-tcp"
       source_security_group_id = module.internal_elb_sg.security_group_id
+      description              = "Allow HTTP from internal ELB"
     }
   ]
+  number_of_computed_ingress_with_source_security_group_id = 1
 
   tags = {
     Environment = var.environment
@@ -114,12 +125,16 @@ module "rds_sg" {
     {
       rule                     = "mysql-tcp"
       source_security_group_id = module.backend_app_sg.security_group_id
+      description              = "Allow Mysql from backend app."
     },
     {
       rule                     = "mysql-tcp"
       source_security_group_id = module.management_sg.security_group_id
+      description              = "Allow mysql from management."
     }
   ]
+  number_of_computed_ingress_with_source_security_group_id = 2
+
 
   tags = {
     Environment = var.environment
