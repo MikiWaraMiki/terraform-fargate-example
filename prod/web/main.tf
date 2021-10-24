@@ -21,6 +21,15 @@ module "backend_log_group" {
   retention_in_days = 5 //days
 }
 
+module "frontend_log_group" {
+  source  = "terraform-aws-modules/cloudwatch/aws//modules/log-group"
+  version = "~> 2.0"
+
+  name              = "/ecs/react-frontend"
+  retention_in_days = 5 //days
+
+}
+
 resource "aws_ecs_task_definition" "backend" {
   family                   = "${var.environment}-fargate-backend"
   cpu                      = 512
@@ -35,7 +44,7 @@ resource "aws_ecs_task_definition" "backend" {
       {
         "name" : "go-backend",
         "image" : "${data.terraform_remote_state.ecr.outputs.backend_repo_repository_url}:v1",
-        "memoryReservation" : 50,
+        "memoryReservation" : 512,
         "essential" : true,
         "portMappings" : [
           {
@@ -53,6 +62,43 @@ resource "aws_ecs_task_definition" "backend" {
           }
         }
       }
+    ]
+  )
+}
+
+resource "aws_ecs_task_definition" "frontend" {
+  family                   = "${var.environment}-fargate-frontend"
+  cpu                      = 512
+  memory                   = 1024
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+
+  execution_role_arn = data.aws_iam_role.execution_role.arn
+
+  container_definitions = jsonencode(
+    [
+      {
+        "name" : "react-frontend",
+        "image" : "${data.terraform_remote_state.ecr.outputs.frontend_repo_repository_url}:v1",
+        "memoryReservation" : 512,
+        "essential" : true,
+        "portMappings" : [
+          {
+            "protocol" : "tcp",
+            "containerPort" : 80,
+            "hostPort" : 80
+          }
+        ],
+        "logConfiguration" : {
+          "logDriver" : "awslogs",
+          "options" : {
+            "awslogs-region" : "ap-northeast-1",
+            "awslogs-stream-prefix" : "ecs",
+            "awslogs-group" : "/ecs/react-frontend"
+          }
+        }
+      },
+
     ]
   )
 }
@@ -79,11 +125,4 @@ module "cluster" {
       weight            = 2
     }
   ]
-}
-
-resource "aws_ecs_service" "backend" {
-  name            = "${var.environment}-backend"
-  cluster         = module.cluster.ecs_cluster_id
-  task_definition = aws_ecs_task_definition.backend.arn
-  desired_count   = 2
 }
