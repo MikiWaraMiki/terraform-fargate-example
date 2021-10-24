@@ -107,6 +107,12 @@ module "gateway_endpoints" {
       subnet_ids          = values(aws_subnet.gateway_subnets)[*].id
       tags                = { Name = "${var.pj_prefix}-${var.environment}-logs-api" }
     }
+    secretes_manager = {
+      service             = "secretsmanager"
+      private_dns_enabled = true
+      subnet_ids          = values(aws_subnet.gateway_subnets)[*].id
+      tags                = { Name = "${var.pj_prefix}-${var.environment}-secretsmanager" }
+    }
   }
 
   tags = {

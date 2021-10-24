@@ -6,6 +6,10 @@ output "elb_id" {
   description = "The id of elb"
   value       = module.alb.lb_id
 }
+output "elb_dns" {
+  description = "The dns of elb"
+  value       = module.alb.lb_dns_name
+}
 
 
 output "target_group_arns" {
